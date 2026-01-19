@@ -1,15 +1,16 @@
-# Public Transport Performance Analysis for Auckland (Backend)
+# Road Traffic Flow Analysis for Auckland (Backend)
 
 ## Overview
-This project analyses historical public transport performance data in Auckland 
-and provides interpretable summary insights through a Spring Boot backend and visual dashboards.
+This project analyses historical road traffic flow data in Auckland and provides interpretable summary insights on traffic volumes and peak periods through a Spring Boot backend and visual dashboards.
+The project focuses on historical analysis rather than real-time traffic management or control.
 
 ## Tech Stack
 - Backend
     - Java 17, Spring Boot (Spring Web)
     - RESTful APIs (JSON)
 - Data & Storage
-    - Data source: Official Auckland Transport open datasets (CSV)
+    - Data source: Official Auckland Transport traffic count datasets (XLSX)
+    - Data range: July 2012 to September 2025
     - ETL: Download → validate and clean → import into PostgreSQL
     - Database: PostgreSQL
 - Frontend
@@ -23,12 +24,12 @@ and provides interpretable summary insights through a Spring Boot backend and vi
     - Maven, Git/GitHub
 
 ## Data Flow
-- AT open CSV datasets → PostgreSQL → Spring Boot REST APIs → Power BI / Python analysis
+- AT traffic count datasets → PostgreSQL → Spring Boot REST APIs → Power BI / Python analysis
 
 ## MVP Features
-- Traffic summary inquiry
-- Station or route delay overview
-- Performance analysis dashboard
+- Traffic flow summary inquiry
+- Traffic volume overview
+- Peak period traffic analysis dashboard
 
 ## Documentation
 - Project Proposal: docs/project-proposal.md

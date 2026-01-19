@@ -1,33 +1,31 @@
-# Public Transport Performance Analysis for Auckland
+# Road Traffic Flow Analysis for Auckland (Backend)
 
 ## Background and objective
 - Issue
-    - Commuting uncertainty due to delays, congestion and service cancellations
-    - Lack of unified visual analysis for transport performance
+    - Commuting uncertainty caused by traffic congestion and peak-period pressure
+    - Lack of unified and interpretable visual analysis for road traffic flow patterns
 - Objective
-    - Analyze historical public transport performance
-    - Provide clear visual insights via dashboards
-    - Support commuters and operational analysis
+    - Analyze historical road traffic flow data in Auckland
+    - Provide clear and interpretable visual insights through dashboards
+    - Support commuter awareness and traffic flow analysis
 
 ## Data source
-- Auckland Transport operational data (CSV)
-- Stats NZ demographic data (optional contextual analysis)
+- Official Auckland Transport traffic count datasets (XLSX)
 
 ## Persona and Scenarios
 - For commuters
-    - Station or route query
-    - Historical delay risk awareness
-    - Simple transfer risk indication(rule-based)
-- For operational analysis
-    - On-time rate analysis
-    - Dealy distribution by route/time
-    - Identification of high-risk routes
+    - Query the historical traffic flow by road or traffic monitoring site
+    - Get the information of traffic pressure at different times of the day (peak vs off-peak)
+- For Analytical and Operational Insight
+    - Traffic volume level analysis
+    - Traffic flow distribution by road and time period
+    - Identification of high-traffic and peak-pressure locations
 
 ## MVP(Core function)
 - User Section
-    - Traffic summary Inquiry
-    - Station or route delay overview
-- Management Section
-    - Performance dashboard
-    - Historical trend and peak analysis
-    - Delay prediction using simple regression
+    - Traffic flow summary inquiry
+    - Traffic volume overview by road or monitoring site
+- Analysis Section
+    - Traffic flow analysis dashboard
+    - Historical trend and peak-period analysis
+    - Traffic volume trend estimation using simple regression (exploratory)
