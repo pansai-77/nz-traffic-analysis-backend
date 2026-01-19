@@ -1,0 +1,1 @@
+# Simplify the outline design
