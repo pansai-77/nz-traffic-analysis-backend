@@ -1,4 +1,4 @@
-package io.github.pansai.demo_20260107;
+package io.github.pansai.traffic;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

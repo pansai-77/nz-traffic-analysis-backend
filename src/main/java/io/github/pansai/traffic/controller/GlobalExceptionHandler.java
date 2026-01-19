@@ -1,10 +1,10 @@
-package io.github.pansai.demo_20260107.controller;
+package io.github.pansai.traffic.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import io.github.pansai.demo_20260107.dto.ErrorResponse;
+import io.github.pansai.traffic.dto.response.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

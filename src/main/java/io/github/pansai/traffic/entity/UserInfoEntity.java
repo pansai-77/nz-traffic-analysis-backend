@@ -1,5 +1,6 @@
-package io.github.pansai.demo_20260107.entity;
+package io.github.pansai.traffic.entity;
 
+import io.github.pansai.traffic.enums.UserStatus;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -7,27 +8,31 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "user_info", schema = "public")
-public class UserInfo {
+public class UserInfoEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Integer userId;
+    private Long userId;
 
     @Column(name = "user_name", nullable = false, length = 100)
     private String userName;
 
-    @Column(name = "email", unique = true, length = 100)
-    private String email;
+    /**
+     * Important: store BCrypt hash only.
+     */
+    @Column(name = "user_pwd", nullable = false, length = 128)
+    private String userPwdHash;
 
-    @Column(name = "sex")
-    private Integer sex;  // sex:0-female, 1-male, 9-other
+    @Column(name = "user_email", nullable = false, unique = true, length = 100)
+    private String userEmail;
 
-    @Column(name = "birthdate")
-    private LocalDate birthdate;
+    @Column(name = "user_birthdate")
+    private LocalDate userBirthdate;
 
-    @Column(name = "status")
-    private Integer status; // status: 0-disable 1-enable 2-freeze
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status", nullable = false,length = 20)
+    private UserStatus userStatus; // status:PENDING or ACTIVE
 
     @Column(name = "create_time")
     private LocalDateTime createTime;
@@ -47,12 +52,11 @@ public class UserInfo {
         this.updateTime = LocalDateTime.now();
     }
 
-    //get and set
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -64,36 +68,36 @@ public class UserInfo {
         this.userName = userName;
     }
 
-    public String getEmail() {
-        return email;
+    public String getUserPwdHash() {
+        return userPwdHash;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUserPwdHash(String userPwdHash) {
+        this.userPwdHash = userPwdHash;
     }
 
-    public Integer getSex() {
-        return sex;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setSex(Integer sex) {
-        this.sex = sex;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 
-    public LocalDate getBirthdate() {
-        return birthdate;
+    public LocalDate getUserBirthdate() {
+        return userBirthdate;
     }
 
-    public void setBirthdate(LocalDate birthdate) {
-        this.birthdate = birthdate;
+    public void setUserBirthdate(LocalDate userBirthdate) {
+        this.userBirthdate = userBirthdate;
     }
 
-    public Integer getStatus() {
-        return status;
+    public UserStatus getUserStatus() {
+        return userStatus;
     }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+    public void setUserStatus(UserStatus userStatus) {
+        this.userStatus = userStatus;
     }
 
     public LocalDateTime getCreateTime() {

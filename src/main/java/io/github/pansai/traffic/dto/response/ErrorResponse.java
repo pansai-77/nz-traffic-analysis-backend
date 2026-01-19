@@ -1,7 +1,6 @@
-package io.github.pansai.demo_20260107.dto;
+package io.github.pansai.traffic.dto.response;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 public record ErrorResponse(
         String code,

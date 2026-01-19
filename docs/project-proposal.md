@@ -10,7 +10,7 @@
     - Support commuter awareness and traffic flow analysis
 
 ## Data source
-- Official Auckland Transport traffic count datasets (XLSX)
+- Official Auckland Transport traffic count datasets (XLSX, https://at.govt.nz/about-us/reports-publications/traffic-counts) 
 
 ## Persona and Scenarios
 - For commuters
