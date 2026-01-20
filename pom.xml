@@ -9,7 +9,7 @@
     <groupId>io.github.pansai</groupId>
     <artifactId>traffic</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>nz-traffic-analysis-backend</name>
+    <name>traffic-analysis</name>
     <description>Auckland Traffic Flow Analysis</description>
 
     <!-- spring boot parent -->

@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NZTrafficAnalysisBackendApplication {
+public class TrafficAnalysisApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(NZTrafficAnalysisBackendApplication.class, args);
+        SpringApplication.run(TrafficAnalysisApplication.class, args);
     }
 
 }
