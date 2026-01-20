@@ -47,9 +47,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Value("${app.jwt.expire_minutes}")
     private Integer expireMin;
 
-    @Value("${app.jwt.type}")
-    private String loginTokenType;
-
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
 
@@ -217,7 +214,7 @@ public class UserInfoServiceImpl implements UserInfoService {
        //return info
        return new LoginResponse(
                 loginToken,
-                loginTokenType,
+               "Bearer",
                 user.getUserId(),
                 user.getUserName(),
                 user.getUserEmail()
