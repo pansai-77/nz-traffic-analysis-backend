@@ -27,9 +27,24 @@ The project focuses on historical analysis rather than real-time traffic managem
 - AT traffic count datasets → PostgreSQL → Spring Boot REST APIs → Power BI / Python analysis
 
 ## MVP Features
+- User register, activate and login
 - Traffic flow summary inquiry
 - Traffic volume overview
 - Peak period traffic analysis dashboard
+
+## Project Structure
+src/main/java/io/github/pansai/traffic
+├─ config/                 # Configuration Class
+├─ controller/             # Control Layer
+├─ dto/                    # Data Transfer Object
+│  ├─ request/
+│  └─ response/
+├─ service/                # Business Logic Layer
+│  └─ impl/
+├─ dao/                    # Data Access Layer
+├─ entity/                 # Entity Class（JPA Entity）
+├─ enums/                  # Define Enumeration
+└─ NZTrafficAnalysisBackendApplication  # Spring Boot Startup
 
 ## Documentation
 - Project Proposal: docs/project-proposal.md
