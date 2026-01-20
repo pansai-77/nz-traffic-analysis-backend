@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 public interface UserActivationTokenRepo extends JpaRepository<UserActivationToken, Long> {
 
     UserActivationToken findByTokenInfo(String tokenInfo);
+
+    UserActivationToken findByUserId(Long userId);
 }

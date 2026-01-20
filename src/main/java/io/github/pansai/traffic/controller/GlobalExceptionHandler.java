@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import io.github.pansai.traffic.dto.response.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.Instant;
@@ -13,49 +14,31 @@ import java.time.Instant;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 在 Service 里主动抛出的参数/业务错误 -> 400
-   @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgument(
-            IllegalArgumentException ex,
-            HttpServletRequest req
-   ){
-       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-               .body(new ErrorResponse(
-                       "BAD_REQUEST",
-                       ex.getMessage(),
-                       req.getRequestURI(),
-                       Instant.now()
-               ));
-   }
+    // service failed 400
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse badRequest(IllegalArgumentException ex, HttpServletRequest request) {
+        return new ErrorResponse("BAD_REQUEST", ex.getMessage(), request.getRequestURI(), Instant.now());
+    }
 
-    // 数据库约束冲突（unique 等） -> 409
+    // database constraint conflict (example: unique) 409
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrity(
-            DataIntegrityViolationException ex,
-            HttpServletRequest req
-    ) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ErrorResponse(
-                        "CONFLICT",
-                        "Database constraint violated",
-                        req.getRequestURI(),
-                        Instant.now()
-                ));
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrity(DataIntegrityViolationException ex, HttpServletRequest request) {
+        return new ErrorResponse("CONFLICT", "Database constraint violated", request.getRequestURI(), Instant.now());
     }
 
-    // 兜底 -> 500（生产环境建议隐藏细节）
+    // state error 403
+    @ExceptionHandler(IllegalStateException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleForbidden(IllegalStateException ex, HttpServletRequest request) {
+        return new ErrorResponse("FORBIDDEN", ex.getMessage(), request.getRequestURI(), Instant.now());
+    }
+
+    // else 500
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleOthers(
-            Exception ex,
-            HttpServletRequest req
-    ) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(
-                        "INTERNAL_ERROR",
-                        "Internal server error",
-                        req.getRequestURI(),
-                        Instant.now()
-                ));
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleForbidden(Exception ex, HttpServletRequest request) {
+        return new ErrorResponse("INTERNAL_ERROR", "Internal server error", request.getRequestURI(), Instant.now());
     }
-
 }
