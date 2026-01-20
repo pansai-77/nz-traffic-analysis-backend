@@ -32,6 +32,7 @@ This project focuses on historical analyses of traffic flow on Auckland roads. T
 - Peak period traffic analysis dashboard
 
 ## Project Structure
+```text
 src/main/java/io/github/pansai/traffic
 ├─ config/                 # Configuration Class
 ├─ controller/             # Control Layer
@@ -44,6 +45,7 @@ src/main/java/io/github/pansai/traffic
 ├─ entity/                 # Entity Class (JPA Entity)
 ├─ enums/                  # Define Enumeration
 └─ NZTrafficAnalysisBackendApplication  # Spring Boot Startup
+```
 
 ## Documentation
 - Project Proposal: docs/project-proposal.md
