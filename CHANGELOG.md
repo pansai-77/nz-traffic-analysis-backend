@@ -1,5 +1,9 @@
 # Version iteration
 
+## v0.2.1
+- User login
+- Security-on
+
 ## v0.2.0
 - User module initialization
 - User register

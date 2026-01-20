@@ -13,15 +13,17 @@ public class MailServiceImpl implements MailService {
     @Autowired
     private JavaMailSender mailSender;
 
-    /**
-     * Base URL for activation link
-     */
     @Value("${app.mail.activation-base-url}")
     private String activationBaseUrl;
 
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    /**
+     * send user activation mail
+     * @param toEmail receiver email address
+     * @param token activation token
+     */
     @Override
     public void sendActivationMail(String toEmail, String token) {
         String activationLink = activationBaseUrl + "/api/userInfo/activate?token=" + token;

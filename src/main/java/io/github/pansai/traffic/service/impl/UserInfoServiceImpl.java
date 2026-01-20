@@ -8,23 +8,17 @@ import io.github.pansai.traffic.dto.response.LoginResponse;
 import io.github.pansai.traffic.entity.UserActivationToken;
 import io.github.pansai.traffic.entity.UserInfoEntity;
 import io.github.pansai.traffic.enums.UserStatus;
+import io.github.pansai.traffic.service.JwtAuthService;
 import io.github.pansai.traffic.service.MailService;
 import io.github.pansai.traffic.service.UserInfoService;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
 @Service("userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
@@ -41,14 +35,13 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private MailService mailService;
 
-    @Value("${app.jwt.secret}")
-    private String loginSecret;
+    @Autowired
+    private JwtAuthService jwtAuthService;
 
-    @Value("${app.jwt.expire_minutes}")
-    private Integer expireMin;
+    @Value("${app.jwt.type}")
+    private String jwtType;
 
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
-
 
     /**
      * registerUser: verify input -> hash pwd -> save user -> generate activation token -> save activation token -> send email
@@ -209,12 +202,12 @@ public class UserInfoServiceImpl implements UserInfoService {
        }
 
        // generate login token
-       String loginToken = generateLoginToken(user.getUserId(), user.getUserEmail());
+       String loginToken = jwtAuthService.generateLoginToken(user.getUserId(), user.getUserEmail());
 
        //return info
        return new LoginResponse(
                 loginToken,
-               "Bearer",
+                jwtType,
                 user.getUserId(),
                 user.getUserName(),
                 user.getUserEmail()
@@ -222,6 +215,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     }
 
     /**
+     * private
      * generate activation token
      * @return activation token
      */
@@ -233,29 +227,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             stringBuilder.append(String.format("%02x", b));
         }
         return stringBuilder.toString();
-    }
-
-
-    /**
-     * generate login token
-     * @param userId user id
-     * @param userEmail user email
-     * @return login token
-     */
-    private String generateLoginToken(Long userId, String userEmail){
-        // generate key
-        SecretKey key = Keys.hmacShaKeyFor(loginSecret.getBytes(StandardCharsets.UTF_8));
-        // get the current time、expire time
-        Instant now = Instant.now();
-        Instant expireTime = now.plus(expireMin, ChronoUnit.MINUTES);
-        //return
-        return Jwts.builder()
-                .subject(userEmail)
-                .claim("userId", userId)
-                .issuedAt(Date.from(now))
-                .expiration(Date.from(expireTime))
-                .signWith(key)
-                .compact();
     }
 
 }

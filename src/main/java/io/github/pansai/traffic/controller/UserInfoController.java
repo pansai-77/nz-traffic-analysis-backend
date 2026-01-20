@@ -55,4 +55,8 @@ public class UserInfoController {
         return userInfoService.loginUserJwt(loginRequest);
     }
 
+    @GetMapping("/ping")
+    public String ping() {
+        return "ok";
+    }
 }

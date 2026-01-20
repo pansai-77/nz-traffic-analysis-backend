@@ -1,10 +1,10 @@
-package io.github.pansai.traffic.controller;
+package io.github.pansai.traffic.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import io.github.pansai.traffic.dto.response.ErrorResponse;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,6 +18,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse badRequest(IllegalArgumentException ex, HttpServletRequest request) {
+        return new ErrorResponse("BAD_REQUEST", ex.getMessage(), request.getRequestURI(), Instant.now());
+    }
+
+    // verify failed 400
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse badRequest(UsernameNotFoundException ex, HttpServletRequest request) {
         return new ErrorResponse("BAD_REQUEST", ex.getMessage(), request.getRequestURI(), Instant.now());
     }
 

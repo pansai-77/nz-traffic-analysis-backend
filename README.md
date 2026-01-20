@@ -35,6 +35,7 @@ This project focuses on historical analyses of traffic flow on Auckland roads. T
 ```text
 src/main/java/io/github/pansai/traffic
 ├─ config/                 # Configuration Class
+├─ handler/                # Global Handler
 ├─ controller/             # Control Layer
 ├─ dto/                    # Data Transfer Object
 │  ├─ request/
