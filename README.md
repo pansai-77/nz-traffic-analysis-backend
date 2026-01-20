@@ -1,8 +1,7 @@
-# Road Traffic Flow Analysis for Auckland (Backend)
+# Auckland Traffic Flow Analysis (Backend)
 
 ## Overview
-This project analyses historical road traffic flow data in Auckland and provides interpretable summary insights on traffic volumes and peak periods through a Spring Boot backend and visual dashboards.
-The project focuses on historical analysis rather than real-time traffic management or control.
+This project focuses on historical analyses of traffic flow on Auckland roads. The data is from Auckland Transport. It provides the analysis of traffic volumes and traffic peak periods via visual dashboards.
 
 ## Tech Stack
 - Backend
@@ -17,7 +16,7 @@ The project focuses on historical analysis rather than real-time traffic managem
     - Web-based frontend for data presentation
     - HTML / CSS / JavaScript (consuming backend APIs)
     - (Optional) React for interactive views
-- Analytics & Visualisation
+- Analytics & Visualization
     - Python (Pandas) for data analysis
     - Power BI for dashboard development
 - Tooling
@@ -27,7 +26,7 @@ The project focuses on historical analysis rather than real-time traffic managem
 - AT traffic count datasets → PostgreSQL → Spring Boot REST APIs → Power BI / Python analysis
 
 ## MVP Features
-- User register, activate and login
+- User registration, activation, and login
 - Traffic flow summary inquiry
 - Traffic volume overview
 - Peak period traffic analysis dashboard
@@ -42,9 +41,14 @@ src/main/java/io/github/pansai/traffic
 ├─ service/                # Business Logic Layer
 │  └─ impl/
 ├─ dao/                    # Data Access Layer
-├─ entity/                 # Entity Class（JPA Entity）
+├─ entity/                 # Entity Class (JPA Entity)
 ├─ enums/                  # Define Enumeration
 └─ NZTrafficAnalysisBackendApplication  # Spring Boot Startup
 
 ## Documentation
 - Project Proposal: docs/project-proposal.md
+
+## Frontend Integration
+The backend communicates with the frontend via REST APIs.
+- Frontend: nz-traffic-analysis-frontend
+- Frontend GitHub: https://github.com/pansai-77/nz-traffic-analysis-frontend.git
