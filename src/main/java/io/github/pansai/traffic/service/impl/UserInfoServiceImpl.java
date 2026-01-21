@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service("userInfoService")
 public class UserInfoServiceImpl implements UserInfoService {
@@ -104,14 +105,14 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new IllegalArgumentException("Invalid token");
         }
 
-        // check whether use
-        if (activationToken.getUsedAt() != null) {
-            throw new IllegalArgumentException("Token already used");
-        }
-
         //check whether expired
         if(activationToken.getExpiresAt().isBefore(LocalDateTime.now())){
             throw new IllegalArgumentException("Token expired");
+        }
+
+        // check whether use. some email will take 2 request
+        if (activationToken.getUsedAt() != null) {
+            return "Your account have activated. You can login now! Enjoy!";
         }
 
         //update user status
@@ -142,17 +143,9 @@ public class UserInfoServiceImpl implements UserInfoService {
             throw new IllegalStateException("User already activated");
         }
 
-        // find token
-        UserActivationToken userActivationToken = userActivationTokenRepo.findByUserId(user.getUserId());
-        if(userActivationToken == null){
-            throw new IllegalArgumentException("Invalid UserToken");
-        }
-        // verify whether it has been used
-        if(userActivationToken.getUsedAt() != null){
-            throw new IllegalArgumentException("User already activated");
-        }
-        // verify whether it has been expired
-        if(userActivationToken.getExpiresAt().isAfter(LocalDateTime.now())){
+        // check whether the user already has a valid activation token
+        UserActivationToken userActivationToken = userActivationTokenRepo.findValidTokenByUserId(user.getUserId());
+        if(userActivationToken != null){
             return "We have sent you an activation email, Please check your email";
         }
 

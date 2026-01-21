@@ -26,7 +26,7 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public void sendActivationMail(String toEmail, String token) {
-        String activationLink = activationBaseUrl + "/api/userInfo/activate?token=" + token;
+        String activationLink = activationBaseUrl + "/activate?token=" + token;
 
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromEmail);
