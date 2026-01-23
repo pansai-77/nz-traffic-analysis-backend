@@ -91,7 +91,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- 建议添加：开发工具 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>

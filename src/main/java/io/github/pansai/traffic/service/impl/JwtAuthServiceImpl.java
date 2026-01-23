@@ -59,31 +59,7 @@ public class JwtAuthServiceImpl implements JwtAuthService {
      * @return subject-email
      */
     @Override
-    public String resolveLoginToken(String loginToken) {
-        Claims claims = resolveClaims(loginToken);
-        return claims.getSubject();
-    }
-
-    @Override
-    public boolean validLoginToken(String loginToken, UserDetails userDetails) {
-        // get email and expirationTime
-        Claims claims = resolveClaims(loginToken);
-        String emailSubject = claims.getSubject();
-        Date expirationTime = claims.getExpiration();
-
-        //verify user and whether expired
-        boolean userVerify = emailSubject.equals(userDetails.getUsername());
-        boolean tokenExpiredVerify = expirationTime.before(new Date());
-
-        return userVerify && tokenExpiredVerify;
-    }
-
-    /**
-     * get claims
-     * @param loginToken user login token
-     * @return claims
-     */
-    private Claims resolveClaims(String loginToken){
+    public Claims resolveLoginToken(String loginToken) {
         SecretKey key = Keys.hmacShaKeyFor(loginSecret.getBytes(StandardCharsets.UTF_8));
 
         return Jwts.parser()
@@ -93,5 +69,23 @@ public class JwtAuthServiceImpl implements JwtAuthService {
                 .getPayload();
     }
 
+    @Override
+    public boolean validLoginToken(Claims claims, UserDetails userDetails) {
+        if (claims == null || userDetails == null) {
+            return false;
+        }
 
+        // get email and expirationTime
+        String emailSubject = claims.getSubject();
+        Date expirationTime = claims.getExpiration();
+        if (emailSubject == null || expirationTime == null) {
+            return false;
+        }
+
+        //verify user and whether expired
+        boolean userVerify = emailSubject.equals(userDetails.getUsername());
+        boolean tokenExpiredVerify = expirationTime.after(new Date());
+
+        return userVerify && tokenExpiredVerify;
+    }
 }

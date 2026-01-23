@@ -11,7 +11,7 @@ public interface UserInfoService {
      * @param request userinfo
      * @return success or fail msg
      */
-    String registerUser(UserInfoRequest request);
+    void registerUser(UserInfoRequest request);
 
 
     /**
@@ -19,14 +19,14 @@ public interface UserInfoService {
      * @param token token info
      * @return success or fail msg
      */
-    String activateUser(String token);
+    void activateUser(String token);
 
     /**
      * resend activation email
      * @param email user email
      * @return success or fail msg
      */
-    String resendActEmail(String email);
+    void resendActEmail(String email);
 
     /**
      * user login (json web token) based on token

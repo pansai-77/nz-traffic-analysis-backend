@@ -7,12 +7,19 @@ import io.github.pansai.traffic.dto.request.UserInfoRequest;
 import io.github.pansai.traffic.dto.response.LoginResponse;
 import io.github.pansai.traffic.entity.UserActivationToken;
 import io.github.pansai.traffic.entity.UserInfoEntity;
+import io.github.pansai.traffic.enums.ErrorCode;
 import io.github.pansai.traffic.enums.UserStatus;
+import io.github.pansai.traffic.handler.BusinessException;
 import io.github.pansai.traffic.service.JwtAuthService;
 import io.github.pansai.traffic.service.MailService;
 import io.github.pansai.traffic.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +46,9 @@ public class UserInfoServiceImpl implements UserInfoService {
     @Autowired
     private JwtAuthService jwtAuthService;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
     @Value("${app.jwt.type}")
     private String jwtType;
 
@@ -47,15 +57,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     /**
      * registerUser: verify input -> hash pwd -> save user -> generate activation token -> save activation token -> send email
      * @param userInfoRequest userinfo required: name, pwd, email; optional: birthdate
-     * @return success msg or fail msg
      */
     @Override
     @Transactional
-    public String registerUser(UserInfoRequest userInfoRequest) {
+    public void registerUser(UserInfoRequest userInfoRequest) {
         String email = userInfoRequest.userEmail().trim();
 
         if (userInfoRepo.existsByUserEmail(email)){
-            throw new IllegalArgumentException("This email is already exists");
+            throw new BusinessException(ErrorCode.USER_REGISTER_EMAIL_ALREADY_EXISTS);
         }
 
         //define new user: hash pwd
@@ -87,8 +96,6 @@ public class UserInfoServiceImpl implements UserInfoService {
             ex.printStackTrace();
             throw ex;
         }
-
-        return "We have received your register and sent an activation email to you. Please check your email. Thank you!";
     }
 
     /**
@@ -98,55 +105,52 @@ public class UserInfoServiceImpl implements UserInfoService {
      */
     @Override
     @Transactional
-    public String activateUser(String token) {
+    public void activateUser(String token) {
         UserActivationToken activationToken = userActivationTokenRepo.findByTokenInfo(token);
         // check whether exists
         if (activationToken == null){
-            throw new IllegalArgumentException("Invalid token");
+            throw new BusinessException(ErrorCode.USER_ACTIVATION_TOKEN_NOT_EXISTS);
         }
 
         //check whether expired
         if(activationToken.getExpiresAt().isBefore(LocalDateTime.now())){
-            throw new IllegalArgumentException("Token expired");
+            throw new BusinessException(ErrorCode.USER_ACTIVATION_TOKEN_EXPIRED);
         }
 
-        // check whether use. some email will take 2 request
-        if (activationToken.getUsedAt() != null) {
-            return "Your account have activated. You can login now! Enjoy!";
+        if (activationToken.getUsedAt() == null) {
+            //update user status
+            UserInfoEntity userInfo = userInfoRepo.findByUserId(activationToken.getUserId());
+            userInfo.setUserStatus(UserStatus.ACTIVE);
+            userInfoRepo.save(userInfo);
+
+            //update token use time
+            activationToken.setUsedAt(LocalDateTime.now());
+            userActivationTokenRepo.save(activationToken);
         }
-
-        //update user status
-        UserInfoEntity userInfo = userInfoRepo.findByUserId(activationToken.getUserId());
-        userInfo.setUserStatus(UserStatus.ACTIVE);
-        userInfoRepo.save(userInfo);
-
-        //update token use time
-        activationToken.setUsedAt(LocalDateTime.now());
-        userActivationTokenRepo.save(activationToken);
-
-        return "Your account have activated. You can login now! Enjoy!";
     }
 
     /**
-     * resend activation email: find user -> find token -> verify use status and expire time -> generate new activation token -> send new activation email
+     * resend activation email: find user -> get token -> verify use status and expire time -> generate new activation token -> send new activation email
      * @param email user email
      * @return success or fail msg
      */
     @Override
-    public String resendActEmail(String email) {
+    public void resendActEmail(String email) {
         // find user
         UserInfoEntity user = userInfoRepo.findByUserEmail(email);
         if(user == null){
-            throw new IllegalArgumentException("Invalid User");
+            throw new BusinessException(ErrorCode.USER_RESEND_USER_NOT_EXISTS);
         }
         if(user.getUserStatus() != UserStatus.PENDING){
-            throw new IllegalStateException("User already activated");
+            throw new BusinessException(ErrorCode.USER_RESEND_ALREADY_ACTIVATED);
         }
 
         // check whether the user already has a valid activation token
         UserActivationToken userActivationToken = userActivationTokenRepo.findValidTokenByUserId(user.getUserId());
-        if(userActivationToken != null){
-            return "We have sent you an activation email, Please check your email";
+        if(userActivationToken != null) {
+            //Invalidate the previous token
+            userActivationToken.setExpiresAt(LocalDateTime.now());
+            userActivationTokenRepo.save(userActivationToken);
         }
 
         //generate new activation token
@@ -163,12 +167,10 @@ public class UserInfoServiceImpl implements UserInfoService {
         //send new activation email
         try{
             mailService.sendActivationMail(email, newActivateToken);
-        }catch (Exception ex){
+        }catch (Exception ex) {
             ex.printStackTrace();
             throw ex;
         }
-
-        return "We have sent you a new activation email, Please check your email";
     }
 
 
@@ -182,17 +184,20 @@ public class UserInfoServiceImpl implements UserInfoService {
        String userEmail = loginRequest.userEmail();
        String userPwd = loginRequest.userPwd();
 
-       // verify the user
-       UserInfoEntity user = userInfoRepo.findByUserEmail(userEmail);
-       if(user == null){
-           throw new IllegalArgumentException("Invalid login! Please check your account");
+       // authenticationManager verify user login
+       try {
+           authenticationManager.authenticate( new UsernamePasswordAuthenticationToken(userEmail, userPwd));
+       } catch (DisabledException ex) {
+           throw new BusinessException(ErrorCode.USER_LOGIN_NOT_ACTIVATE);
+       } catch (BadCredentialsException | UsernameNotFoundException ex) {
+           throw new BusinessException(ErrorCode.USER_LOGIN_INFO_INVALID);
        }
-       if(user.getUserStatus() != UserStatus.ACTIVE){
-           throw new IllegalStateException("Invalid login! Account not activated");
-       }
-       if(!passwordEncoder.matches(userPwd, user.getUserPwdHash())){
-           throw new IllegalArgumentException("Invalid login! Please check your account");
-       }
+
+        // get the user
+        UserInfoEntity user = userInfoRepo.findByUserEmail(userEmail);
+        if(user == null) {
+            throw new BusinessException(ErrorCode.USER_LOGIN_INFO_INVALID);
+        }
 
        // generate login token
        String loginToken = jwtAuthService.generateLoginToken(user.getUserId(), user.getUserEmail());

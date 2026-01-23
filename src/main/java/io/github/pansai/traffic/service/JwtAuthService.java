@@ -1,5 +1,6 @@
 package io.github.pansai.traffic.service;
 
+import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface JwtAuthService {
@@ -17,12 +18,12 @@ public interface JwtAuthService {
      * @param loginToken token
      * @return subject-email
      */
-    String resolveLoginToken(String loginToken);
+    Claims resolveLoginToken(String loginToken);
 
 
     /**
      * valid login token
      * @return
      */
-    boolean validLoginToken(String loginToken, UserDetails userDetails);
+    boolean validLoginToken(Claims claims, UserDetails userDetails);
 }

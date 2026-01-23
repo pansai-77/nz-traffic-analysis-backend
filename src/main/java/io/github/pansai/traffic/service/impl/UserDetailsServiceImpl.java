@@ -18,16 +18,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        if(email == null || email.isBlank()){
+            throw new UsernameNotFoundException("UserName is blank");
+        }
+
         //get user info
         UserInfoEntity userInfo = userInfoRepo.findByUserEmail(email);
         if (userInfo == null){
-            throw new UsernameNotFoundException("Invalid! Please check your account");
+            throw new UsernameNotFoundException("User not found");
         }
 
         //verify user status
+        boolean active = UserStatus.ACTIVE.equals(userInfo.getUserStatus());
+
         return User.withUsername(userInfo.getUserEmail())
                 .password(userInfo.getUserPwdHash())
-                .disabled(!UserStatus.ACTIVE.equals(userInfo.getUserStatus()))
+                .disabled(!active)
                 .authorities("ROLE_USER")
                 .build();
     }

@@ -19,6 +19,12 @@ public class CorsConfig {
         corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173", "http://127.0.0.1:5173"));
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // Put the token in the response header
+        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+        // cookie（refresh token）
+        corsConfiguration.setAllowCredentials(true);
+        // Reduce the frequency of pre-checking (OPTIONS) to enhance the experience
+        corsConfiguration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);
